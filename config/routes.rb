@@ -7,7 +7,9 @@ Rails.application.routes.draw do
         resources :items, only: :index
       end
 
-      resources :items
+      resources :items do
+        get :merchant, on: :member
+      end
     end
   end
 end

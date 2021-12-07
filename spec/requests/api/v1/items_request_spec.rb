@@ -120,8 +120,44 @@ describe "Items API" do
     item = Item.find_by(id: id)
 
     expect(response).to be_successful
-  
+
     expect(item.name).to_not eq(previous_name)
     expect(item.name).to eq('Scratcher 6x')
+  end
+
+  it "can destroy an item" do
+    item = create(:item)
+
+    expect(Item.count).to eq(1)
+
+    delete "/api/v1/items/#{item.id}"
+
+    expect(response.status).to eq(204)
+
+    expect(response).to be_successful
+    expect(Item.count).to eq(0)
+    expect{Item.find(item.id)}.to raise_error(ActiveRecord::RecordNotFound)
+  end
+
+  it "can destroy an item" do
+    item = create(:item)
+
+    expect{ delete "/api/v1/items/#{item.id}" }.to change(Item, :count).by(-1)
+
+    expect(response).to be_successful
+    expect{Item.find(item.id)}.to raise_error(ActiveRecord::RecordNotFound)
+  end
+
+  it 'can get an items merchant' do
+    item = create(:item)
+    merchant = item.merchant
+
+    get "/api/v1/items/#{item.id}/merchant"
+
+    item = JSON.parse(response.body, symbolize_names: true)
+
+    expect(response).to be_successful
+
+    expect(item[:merchant_id]).to eq(merchant.id)
   end
 end
