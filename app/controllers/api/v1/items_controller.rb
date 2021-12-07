@@ -11,7 +11,9 @@ class Api::V1::ItemsController < ApplicationController
     render json: Item.create(item_params), status: 201
   end
 
-
+  def update
+    render json: Item.update(params[:id], item_params)
+  end
 
   private
 

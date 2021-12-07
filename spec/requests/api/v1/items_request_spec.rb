@@ -113,13 +113,14 @@ describe "Items API" do
   it 'can update an item' do
     id = create(:item).id
     previous_name = Item.last.name
-    item_params = { title: 'Scratcher 6x' }
+    item_params = { name: 'Scratcher 6x' }
     headers = {"CONTENT_TYPE" => "application/json"}
 
     patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
     item = Item.find_by(id: id)
 
     expect(response).to be_successful
+  
     expect(item.name).to_not eq(previous_name)
     expect(item.name).to eq('Scratcher 6x')
   end
