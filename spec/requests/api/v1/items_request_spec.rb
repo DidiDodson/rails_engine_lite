@@ -154,10 +154,10 @@ describe "Items API" do
 
     get "/api/v1/items/#{item.id}/merchant"
 
-    item = JSON.parse(response.body, symbolize_names: true)
+    merchant = JSON.parse(response.body, symbolize_names: true)
 
     expect(response).to be_successful
 
-    expect(item[:merchant_id]).to eq(merchant.id)
+    expect(item[:merchant_id]).to eq(merchant[:id])
   end
 end

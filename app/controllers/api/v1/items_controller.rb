@@ -20,7 +20,8 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def merchant
-    render json: Item.find(params[:id])
+    item = Item.find(params[:id])
+    render json: item.merchant
   end
 
   private
