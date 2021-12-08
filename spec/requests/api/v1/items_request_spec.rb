@@ -1,36 +1,6 @@
 require 'rails_helper'
 
 describe "Items API" do
-  it "sends a list of merchant items" do
-    create_list(:item, 3)
-    merchant_id = create(:merchant).id
-
-    get "/api/v1/merchants/#{merchant_id}/items"
-
-    expect(response).to be_successful
-
-    items = JSON.parse(response.body, symbolize_names: true)
-
-    expect(items.count).to eq(3)
-
-    items.each do |item|
-      expect(item).to have_key(:id)
-      expect(item[:id]).to be_an(Integer)
-
-      expect(item).to have_key(:name)
-      expect(item[:name]).to be_a(String)
-
-      expect(item).to have_key(:description)
-      expect(item[:description]).to be_a(String)
-
-      expect(item).to have_key(:unit_price)
-      expect(item[:unit_price]).to be_a(Float)
-
-      expect(item).to have_key(:merchant_id)
-      expect(item[:merchant_id]).to be_a(Integer)
-    end
-  end
-
   it "sends a list of items" do
     create_list(:item, 3)
 
@@ -40,23 +10,23 @@ describe "Items API" do
 
     items = JSON.parse(response.body, symbolize_names: true)
 
-    expect(items.count).to eq(3)
+    expect(items[:data].count).to eq(3)
 
-    items.each do |item|
+    items[:data].each do |item|
       expect(item).to have_key(:id)
-      expect(item[:id]).to be_an(Integer)
+      expect(item[:id]).to be_an(String)
 
-      expect(item).to have_key(:name)
-      expect(item[:name]).to be_a(String)
+      expect(item[:attributes]).to have_key(:name)
+      expect(item[:attributes][:name]).to be_a(String)
 
-      expect(item).to have_key(:description)
-      expect(item[:description]).to be_a(String)
+      expect(item[:attributes]).to have_key(:description)
+      expect(item[:attributes][:description]).to be_a(String)
 
-      expect(item).to have_key(:unit_price)
-      expect(item[:unit_price]).to be_a(Float)
+      expect(item[:attributes]).to have_key(:unit_price)
+      expect(item[:attributes][:unit_price]).to be_a(Float)
 
-      expect(item).to have_key(:merchant_id)
-      expect(item[:merchant_id]).to be_a(Integer)
+      expect(item[:attributes]).to have_key(:merchant_id)
+      expect(item[:attributes][:merchant_id]).to be_a(Integer)
     end
   end
 
@@ -65,24 +35,24 @@ describe "Items API" do
 
     get "/api/v1/items/#{item_id}"
 
-    item = JSON.parse(response.body, symbolize_names: true)
+    item = JSON.parse(response.body, symbolize_names: true)[:data]
 
     expect(response).to be_successful
 
     expect(item).to have_key(:id)
-    expect(item[:id]).to be_an(Integer)
+    expect(item[:id]).to be_an(String)
 
-    expect(item).to have_key(:name)
-    expect(item[:name]).to be_a(String)
+    expect(item[:attributes]).to have_key(:name)
+    expect(item[:attributes][:name]).to be_a(String)
 
-    expect(item).to have_key(:description)
-    expect(item[:description]).to be_a(String)
+    expect(item[:attributes]).to have_key(:description)
+    expect(item[:attributes][:description]).to be_a(String)
 
-    expect(item).to have_key(:unit_price)
-    expect(item[:unit_price]).to be_a(Float)
+    expect(item[:attributes]).to have_key(:unit_price)
+    expect(item[:attributes][:unit_price]).to be_a(Float)
 
-    expect(item).to have_key(:merchant_id)
-    expect(item[:merchant_id]).to be_a(Integer)
+    expect(item[:attributes]).to have_key(:merchant_id)
+    expect(item[:attributes][:merchant_id]).to be_a(Integer)
   end
 
   it 'can create a new item' do
@@ -149,8 +119,8 @@ describe "Items API" do
   end
 
   it 'can get an items merchant' do
-    item = create(:item)
-    merchant = item.merchant
+    merchant = create(:merchant)
+    item = create(:item, merchant_id: merchant.id)
 
     get "/api/v1/items/#{item.id}/merchant"
 
@@ -158,6 +128,6 @@ describe "Items API" do
 
     expect(response).to be_successful
 
-    expect(item[:merchant_id]).to eq(merchant[:id])
+    expect(item[:merchant_id].to_s).to eq(merchant[:data][:id])
   end
 end
