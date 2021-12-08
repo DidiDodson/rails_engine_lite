@@ -10,19 +10,20 @@ describe "Merchants API" do
 
     merchants = JSON.parse(response.body, symbolize_names: true)
 
-    expect(merchants.count).to eq(3)
+    expect(merchants[:data].count).to eq(3)
 
-    merchants.each do |merchant|
+    merchants[:data].each do |merchant|
       expect(merchant).to have_key(:id)
-      expect(merchant[:id]).to be_an(Integer)
+      expect(merchant[:id]).to be_an(String)
 
-      expect(merchant).to have_key(:name)
-      expect(merchant[:name]).to be_a(String)
+      expect(merchant[:attributes]).to have_key(:name)
+      expect(merchant[:attributes][:name]).to be_a(String)
     end
   end
 
-  it 'can get one merhcnat by its id' do
-    id = create(:merchant).id
+  it 'can get one merchant by its id' do
+    merchant = create(:merchant)
+    id = merchant.id
 
     get "/api/v1/merchants/#{id}"
 
@@ -30,10 +31,48 @@ describe "Merchants API" do
 
     expect(response).to be_successful
 
-    expect(merchant).to have_key(:id)
-    expect(merchant[:id]).to eq(id)
+    expect(merchant[:data]).to have_key(:id)
+    expect(merchant[:data][:id]).to eq(id.to_s)
 
-    expect(merchant).to have_key(:name)
-    expect(merchant[:name]).to be_a(String)
+    expect(merchant[:data][:attributes]).to have_key(:name)
+    expect(merchant[:data][:attributes][:name]).to be_a(String)
+  end
+
+  it 'sad path - can get one merchant by its id' do
+    merchant = create(:merchant)
+    invalid_id = merchant.id + 1
+
+    get "/api/v1/merchants/#{invalid_id}"
+
+    failed_merchant = JSON.parse(response.body, symbolize_names: true)
+
+    expect(response).to_not be_successful
+    expect(response.status).to eq(404)
+    expect(failed_merchant).to have_key(:errors)
+    expect(failed_merchant[:errors]).to eq('Merchant does not exist.')
+  end
+
+  it "sends finds a merchant with a search phrase" do
+    create(:merchant, name: "BoroBoro")
+
+    get '/api/v1/merchants/find?name=bor'
+
+    expect(response).to be_successful
+
+    merchant = JSON.parse(response.body, symbolize_names: true)
+
+    expect(merchant[:data][:attributes][:name]).to eq("BoroBoro")
+  end
+
+  it "sad path - sends finds a merchant with a search phrase" do
+    create(:merchant, name: "Brainy Day")
+
+    get '/api/v1/merchants/find?name=bor'
+
+    expect(response).to be_successful
+
+    merchant = JSON.parse(response.body, symbolize_names: true)
+
+    expect(merchant[:data]).to eq({})
   end
 end
