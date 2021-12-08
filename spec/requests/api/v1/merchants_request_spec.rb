@@ -38,35 +38,18 @@ describe "Merchants API" do
     expect(merchant[:data][:attributes][:name]).to be_a(String)
   end
 
-  it "sends a list of merchant items" do
-    merch_id = create(:merchant).id
-    create_list(:item, 3, merchant_id: merch_id)
+  it 'sad path - can get one merchant by its id' do
+    merchant = create(:merchant)
+    invalid_id = merchant.id + 1
 
-    get "/api/v1/merchants/#{merch_id}/items"
+    get "/api/v1/merchants/#{invalid_id}"
 
-    expect(response).to be_successful
+    failed_merchant = JSON.parse(response.body, symbolize_names: true)
 
-    items = JSON.parse(response.body, symbolize_names: true)
-
-    expect(items[:data].count).to eq(3)
-
-    items[:data].each do |item|
-      expect(item).to have_key(:id)
-      expect(item[:id]).to be_an(String)
-
-      expect(item[:attributes]).to have_key(:name)
-      expect(item[:attributes][:name]).to be_a(String)
-
-      expect(item[:attributes]).to have_key(:description)
-      expect(item[:attributes][:description]).to be_a(String)
-
-      expect(item[:attributes]).to have_key(:unit_price)
-      expect(item[:attributes][:unit_price]).to be_a(Float)
-
-      expect(item[:attributes]).to have_key(:merchant_id)
-      expect(item[:attributes][:merchant_id]).to be_a(Integer)
-      expect(item[:attributes][:merchant_id]).to eq(merch_id)
-    end
+    expect(response).to_not be_successful
+    expect(response.status).to eq(404)
+    expect(failed_merchant).to have_key(:errors)
+    expect(failed_merchant[:errors]).to eq('Merchant does not exist.')
   end
 
   it "sends finds a merchant with a search phrase" do
@@ -90,6 +73,6 @@ describe "Merchants API" do
 
     merchant = JSON.parse(response.body, symbolize_names: true)
 
-    expect(merchant[:data]).to eq(nil)
+    expect(merchant[:data]).to eq({})
   end
 end

@@ -55,6 +55,20 @@ describe "Items API" do
     expect(item[:attributes][:merchant_id]).to be_a(Integer)
   end
 
+  it 'sad path - can get one item by id' do
+    item_id = create(:item).id
+    invalid_id = item_id + 1
+
+    get "/api/v1/items/#{invalid_id}"
+
+    failed_item = JSON.parse(response.body, symbolize_names: true)
+
+    expect(response).to_not be_successful
+    expect(response.status).to eq(404)
+    expect(failed_item).to have_key(:errors)
+    expect(failed_item[:errors]).to eq('Item does not exist.')
+  end
+
   it 'can create a new item' do
     merch_id = create(:merchant).id
 
@@ -80,6 +94,27 @@ describe "Items API" do
     expect(created_item.merchant_id).to eq(item_params[:merchant_id])
   end
 
+  it 'sad path - can create a new item' do
+    merch_id = create(:merchant).id
+
+    item_params = {
+                    name: 'Scratcher 3000',
+                    unit_price: 5,
+                    merchant_id: merch_id
+    }
+
+    headers = {"CONTENT_TYPE" => "application/json"}
+
+    post "/api/v1/items", headers: headers, params: JSON.generate(item: item_params)
+
+    failed_item = JSON.parse(response.body, symbolize_names: true)
+
+    expect(response.status).to eq(404)
+    expect(response).to_not be_successful
+    expect(failed_item).to have_key(:errors)
+    expect(failed_item[:errors]).to eq('Missing required field.')
+  end
+
   it 'can update an item' do
     id = create(:item).id
     previous_name = Item.last.name
@@ -93,6 +128,21 @@ describe "Items API" do
 
     expect(item.name).to_not eq(previous_name)
     expect(item.name).to eq('Scratcher 6x')
+  end
+
+  it 'sad path - can update an item' do
+    id = create(:item).id
+    item_params = { merchant_id: '999999999999' }
+    headers = {"CONTENT_TYPE" => "application/json"}
+
+    patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
+
+    failed_item = JSON.parse(response.body, symbolize_names: true)
+
+    expect(response).to_not be_successful
+    expect(response.status).to eq(400)
+    expect(failed_item).to have_key(:errors)
+    expect(failed_item[:errors]).to eq('No such merchant.')
   end
 
   it "can destroy an item" do
@@ -116,18 +166,5 @@ describe "Items API" do
 
     expect(response).to be_successful
     expect{Item.find(item.id)}.to raise_error(ActiveRecord::RecordNotFound)
-  end
-
-  it 'can get an items merchant' do
-    merchant = create(:merchant)
-    item = create(:item, merchant_id: merchant.id)
-
-    get "/api/v1/items/#{item.id}/merchant"
-
-    merchant = JSON.parse(response.body, symbolize_names: true)
-
-    expect(response).to be_successful
-
-    expect(item[:merchant_id].to_s).to eq(merchant[:data][:id])
   end
 end
