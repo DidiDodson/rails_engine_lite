@@ -17,9 +17,9 @@ RSpec.describe Merchant, type: :model do
       @merchant2 = create(:merchant, name: "Sunshine Roofs")
       @merchant3 = create(:merchant, name: "Ring Around the Posey")
 
-      expect(Merchant.merch_name("Rai")).to eq([@merchant1])
-      expect(Merchant.merch_name("day")).to eq([@merchant1])
-      expect(Merchant.merch_name("zanzi")).to eq([])
+      expect(Merchant.merch_name("Rai")).to eq(@merchant1)
+      expect(Merchant.merch_name("day")).to eq(@merchant1)
+      expect(Merchant.merch_name("zanzi")).to eq(nil)
     end
   end
 end

@@ -1,6 +1,6 @@
 class Item < ApplicationRecord
   belongs_to :merchant
-  has_many :invoice_items
+  has_many :invoice_items, dependent: :destroy
   has_many :invoices, through: :invoice_items
 
   validates_presence_of :name
@@ -10,9 +10,5 @@ class Item < ApplicationRecord
 
   def self.item_all_name(name_str)
     where('name ILIKE ?', "%#{name_str}%")
-  end
-
-  def merchant?
-    merchant.exists?(merchant_id)
   end
 end

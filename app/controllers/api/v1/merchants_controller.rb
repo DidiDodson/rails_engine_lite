@@ -12,7 +12,7 @@ class Api::V1::MerchantsController < ApplicationController
   end
 
   def find
-    merchant_name = Merchant.merch_name(params[:name]).first
+    merchant_name = Merchant.merch_name(params[:name])
 
     if merchant_name == nil
       render json: { data: {} }

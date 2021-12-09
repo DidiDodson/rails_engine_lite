@@ -6,5 +6,7 @@ class Merchant < ApplicationRecord
 
   def self.merch_name(name_str)
     where('name ILIKE ?', "%#{name_str}%")
+    .order(name: :asc)
+    .first
   end
 end
