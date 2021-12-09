@@ -43,12 +43,6 @@ class Api::V1::ItemsController < ApplicationController
     render json: Item.delete(params[:item_id]), status: 204
   end
 
-  def find
-    all_item_name = Item.item_all_name(params[:name])
-
-    render json: ItemSerializer.new(all_item_name)
-  end
-
   private
 
   def item_params
