@@ -51,28 +51,4 @@ describe "Merchants API" do
     expect(failed_merchant).to have_key(:errors)
     expect(failed_merchant[:errors]).to eq('Merchant does not exist.')
   end
-
-  it "sends finds a merchant with a search phrase" do
-    create(:merchant, name: "BoroBoro")
-
-    get '/api/v1/merchants/find?name=bor'
-
-    expect(response).to be_successful
-
-    merchant = JSON.parse(response.body, symbolize_names: true)
-
-    expect(merchant[:data][:attributes][:name]).to eq("BoroBoro")
-  end
-
-  it "sad path - sends finds a merchant with a search phrase" do
-    create(:merchant, name: "Brainy Day")
-
-    get '/api/v1/merchants/find?name=bor'
-
-    expect(response).to be_successful
-
-    merchant = JSON.parse(response.body, symbolize_names: true)
-
-    expect(merchant[:data]).to eq({})
-  end
 end
