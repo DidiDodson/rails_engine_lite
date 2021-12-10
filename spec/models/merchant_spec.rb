@@ -21,5 +21,16 @@ RSpec.describe Merchant, type: :model do
       expect(Merchant.merch_name("day")).to eq(@merchant1)
       expect(Merchant.merch_name("zanzi")).to eq(nil)
     end
+
+    it 'returns all merchants by partial name match' do
+      @merchant = create(:merchant, name: "Joe & Roofio")
+      @merchant1 = create(:merchant, name: "Rainy Day Payday Loans")
+      @merchant2 = create(:merchant, name: "Sunshine scroofs")
+      @merchant3 = create(:merchant, name: "Ring Around the Roof")
+
+      expect(Merchant.all_merch_name("roo")).to eq([@merchant, @merchant3, @merchant2])
+      expect(Merchant.all_merch_name("Roo")).to eq([@merchant, @merchant3, @merchant2])
+      expect(Merchant.all_merch_name("zanzi")).to eq([])
+    end
   end
 end

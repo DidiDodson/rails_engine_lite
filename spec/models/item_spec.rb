@@ -41,5 +41,14 @@ RSpec.describe Item, type: :model do
 
       expect(Item.max_price(20.0)).to eq([@item, @item1, @item3])
     end
+
+    it 'returns an item by partial name match' do
+      @item = create(:item, name: "FlimFlam")
+      @item1 = create(:item, name: "Flimsy Ducks")
+      @item2 = create(:item, name: "Snazzleflim")
+      @item3 = create(:item, name: "Ding-flim-Ding")
+
+      expect(Item.item_by_name("flim")).to eq(@item3)
+    end
   end
 end

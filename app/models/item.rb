@@ -23,4 +23,10 @@ class Item < ApplicationRecord
   def self.all_item_price(price1, price2)
     where("unit_price >= #{price1} AND unit_price <= #{price2}")
   end
+
+  def self.item_by_name(name_str)
+    where('name ILIKE ?', "%#{name_str}%")
+    .order(name: :asc)
+    .first
+  end
 end

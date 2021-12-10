@@ -9,4 +9,9 @@ class Merchant < ApplicationRecord
     .order(name: :asc)
     .first
   end
+
+  def self.all_merch_name(name_str)
+    where('name ILIKE ?', "%#{name_str}%")
+    .order(name: :asc)
+  end
 end
