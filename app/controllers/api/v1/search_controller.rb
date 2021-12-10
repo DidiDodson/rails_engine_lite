@@ -3,9 +3,9 @@ class Api::V1::SearchController < ApplicationController
   def find_merchant
     merchant_name = Merchant.merch_name(params[:name])
     if params[:name] == nil
-      render json: { errors: 'No name given.' }, status: 400
+      render json: { data: {} }, status: 400
     elsif params[:name].empty? == true
-      render json: { errors: 'No name given.' }, status: 400
+      render json: { data: {} }
     else
       if merchant_name == nil
         render json: { data: {} }
@@ -18,15 +18,11 @@ class Api::V1::SearchController < ApplicationController
   def find_all_merchants
     merchant_names = Merchant.all_merch_name(params[:name])
     if params[:name] == nil
-      render json: { errors: 'No name given.' }, status: 400
+      render json: { data: {} }
     elsif params[:name].empty? == true
-      render json: { errors: 'No name given.' }, status: 400
+      render json: { data: {} }
     else
-      if merchant_names == nil
-        render json: { data: {} }
-      else
-        render json: MerchantSerializer.new(merchant_names)
-      end
+      render json: MerchantSerializer.new(merchant_names)
     end
   end
 

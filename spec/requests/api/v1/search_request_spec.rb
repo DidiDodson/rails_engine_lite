@@ -47,9 +47,8 @@ describe "Search API" do
 
       merchant = JSON.parse(response.body, symbolize_names: true)
 
-      expect(merchant[:data]).to eq(nil)
-      expect(merchant).to have_key(:errors)
-      expect(merchant[:errors]).to eq('No name given.')
+      expect(merchant[:data]).to eq({})
+      expect(merchant).to have_key(:data)
     end
 
     it "finds all merchants with a search phrase" do
@@ -78,6 +77,7 @@ describe "Search API" do
       merchant = JSON.parse(response.body, symbolize_names: true)
 
       expect(merchant[:data]).to eq({})
+      expect(merchant).to have_key(:data)
     end
 
     it "edge case no name - finds all merchant with a search phrase" do
@@ -89,8 +89,9 @@ describe "Search API" do
 
       merchant = JSON.parse(response.body, symbolize_names: true)
 
-      expect(merchant[:data]).to eq(nil)
-      expect(merchant).to eq({ errors: 'No name given.' })
+      expect(merchant).to have_key(:data)
+      expect(merchant[:data]).to eq({})
+      expect(response.status).to eq(400)
     end
   end
 
