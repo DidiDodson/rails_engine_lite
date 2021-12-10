@@ -15,7 +15,6 @@ class Api::V1::ItemsController < ApplicationController
     new_item = Item.new(item_params)
 
     if new_item.valid? == true
-
       render json: ItemSerializer.new(Item.create(item_params)), status: 201
     else
       render json: { errors: 'Missing required field.' }, status: 404

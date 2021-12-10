@@ -122,10 +122,12 @@ describe "Items API" do
     headers = {"CONTENT_TYPE" => "application/json"}
 
     patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
+
     item = Item.find_by(id: id)
 
     expect(response).to be_successful
 
+    expect(Merchant.exists?(item.merchant_id)).to eq(true)
     expect(item.name).to_not eq(previous_name)
     expect(item.name).to eq('Scratcher 6x')
   end
